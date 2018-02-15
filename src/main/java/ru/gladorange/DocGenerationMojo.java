@@ -24,13 +24,16 @@ import io.swagger.v3.oas.integration.OpenApiConfigurationException;
 import io.swagger.v3.oas.integration.SwaggerConfiguration;
 import io.swagger.v3.oas.integration.api.OpenApiContext;
 
+/**
+ * This is the main Mojo of this plugin which generates docs from supplied packages
+ */
 @Mojo(name = "generate",defaultPhase = LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
-public class MyMojo extends AbstractMojo
+public class DocGenerationMojo extends AbstractMojo
 {
-    @Parameter(property = "project.build.directory")
+    @Parameter(property = "project.build.directory", readonly = true, required = true)
     private File outputDirectory;
 
-    @Parameter
+    @Parameter(required = true,readonly = true)
     private Resource[] resources;
 
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
@@ -67,9 +70,7 @@ public class MyMojo extends AbstractMojo
             Set<URL> urls = new HashSet<>();
             List<String> elements = new ArrayList<>(project.getCompileClasspathElements());
             elements.addAll(project.getRuntimeClasspathElements());
-            //getRuntimeClasspathElements()
-            //getCompileClasspathElements()
-            //getSystemClasspathElements()
+
             for (String element : elements) {
                 urls.add(new File(element).toURI().toURL());
             }
@@ -78,7 +79,7 @@ public class MyMojo extends AbstractMojo
 
             Thread.currentThread().setContextClassLoader(contextClassLoader);
         } catch (Exception e) {
-            throw new MojoExecutionException("Enabke to extend classpath",e);
+            throw new MojoExecutionException("Unable to extend classpath",e);
         }
     }
 
